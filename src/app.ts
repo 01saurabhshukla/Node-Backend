@@ -33,7 +33,12 @@ app.use("/", routes);
 
 app.use((req, res, next) => next(new NotFoundError()));
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (err instanceof ApiError) {
     ApiError.handle(err, res);
     if (err.type === ErrorType.INTERNAL)
@@ -50,6 +55,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     }
     ApiError.handle(new InternalError(), res);
   }
-});
+};
+
+app.use(errorHandler as express.ErrorRequestHandler );
 
 export default app;
